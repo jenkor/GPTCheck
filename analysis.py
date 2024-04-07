@@ -77,7 +77,7 @@ def analyze_and_summarize_section(section, api_key):
                            "Response:")
         
         analysis_response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+            model="gpt-3.5-turbo-0125",
             messages=[
                 {"role": "system", "content": analysis_prompt}
             ],
@@ -144,7 +144,7 @@ def generate_comprehensive_summary(analysis_results, video_title):
     summary_prompt = create_summary_prompt(analysis_results, video_title)
     try:
         summary_response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+            model="gpt-3.5-turbo-0125",
             messages=[
                 {"role": "system", "content": summary_prompt}
             ],
