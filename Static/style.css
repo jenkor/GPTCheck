@@ -1,0 +1,53 @@
+
+body {
+    padding-top: 5rem;
+    background: #f8f9fa;
+}
+.container {
+    max-width: 800px; /* Set to accommodate the widest container */
+    margin: auto; /* Center the container */
+}
+.navbar-brand {
+    color: #fff;
+}
+.footer {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+    margin-top: auto;
+    text-align: center;
+    background: #e9ecef;
+    width: 100%;
+}
+.result-card {
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+/* Center the result title */
+h1 {
+    text-align: center;
+}
+/* Spinner Styles */
+#spinner {
+    display: none;
+    position: fixed; /* Fixed at the center of the page */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Center the spinner */
+    z-index: 1000; /* Make sure it's above other items */
+}
+.spinner-border {
+    width: 4rem; /* Larger spinner */
+    height: 4rem;
+    border-width: 0.5em; /* Thicker border for spinner */
+}
+/* Style for links in the result card */
+.result-card a {
+    color: #0d6efd; /* Bootstrap primary color */
+    text-decoration: none;
+}
+.result-card a:hover {
+    text-decoration: underline;
+}
