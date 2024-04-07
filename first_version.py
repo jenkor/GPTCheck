@@ -22,7 +22,7 @@ def get_transcript(video_id):
         return None
 
 # Function to analyze text for historical and scientific accuracy
-openai.api_key = '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'
+openai.api_key = ''
 
 def analyze_text(text):
     try:
