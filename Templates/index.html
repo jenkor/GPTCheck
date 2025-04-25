@@ -5,50 +5,181 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YouTube Video Analyzer</title>
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
 </head>
-<body>
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+<body data-bs-theme="light">
+    <nav class="navbar navbar-expand-md navbar-dark bg-primary fixed-top">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/">YouTube Video Analyzer</a>
+            <a class="navbar-brand" href="/">
+                <i class="fab fa-youtube me-2"></i>YouTube Video Analyzer
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <button id="theme-toggle" class="btn btn-outline-light">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                    </li>
+                </ul>
+            </div>
         </div>
     </nav>
 
     <div class="content-container d-flex align-items-center justify-content-center">
         <div class="form-container">
-            <h1>Welcome to the YouTube Video Analyzer!</h1>
-            <p>This tool allows you to analyze YouTube videos for insights such as sentiment analysis, content summary, and more. Simply enter the URL of a YouTube video along with your OpenAI API key to get started.</p>
-            <form action="/analyze" method="post" onsubmit="showSpinner()">
-                <div class="mb-3">
-                    <label for="youtube_url" class="form-label">YouTube Video URL:</label>
-                    <input type="text" class="form-control" id="youtube_url" name="youtube_url" required>
+            <div class="text-center mb-4">
+                <h1 class="display-5">YouTube Video Analyzer</h1>
+                <p class="lead">
+                    Analyze YouTube videos for historical accuracy, scientific claims, and more using AI.
+                </p>
+            </div>
+            
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form action="/analyze" method="post" id="analyze-form">
+                        <div class="mb-3">
+                            <label for="youtube_url" class="form-label">
+                                <i class="fab fa-youtube me-2"></i>YouTube Video URL:
+                            </label>
+                            <input type="text" class="form-control" id="youtube_url" name="youtube_url" 
+                                placeholder="https://www.youtube.com/watch?v=..." required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="api_key" class="form-label">
+                                <i class="fas fa-key me-2"></i>OpenAI API Key:
+                            </label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="api_key" name="api_key" 
+                                    placeholder="sk-..." autocomplete="off">
+                                <button class="btn btn-outline-secondary" type="button" id="toggle-api-key">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <small class="text-muted">Your API key is never stored on our servers</small>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary" id="analyze-btn">
+                                <i class="fas fa-search me-2"></i>Analyze Video
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div class="progress mt-3 d-none" id="progress-container">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                    </div>
+                    
+                    <div id="status-message" class="mt-3 text-center d-none"></div>
                 </div>
-                <div class="mb-3">
-                    <label for="api_key" class="form-label">OpenAI API Key:</label>
-                    <input type="text" class="form-control" id="api_key" name="api_key" required>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5>How it works</h5>
                 </div>
-                <button type="submit" class="btn btn-primary w-100">Analyze</button>
-            </form>
-            <div id="spinner" style="display:none;" class="text-center">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
+                <div class="card-body">
+                    <ol class="mb-0">
+                        <li>Enter a YouTube URL and your OpenAI API key</li>
+                        <li>Our system extracts the video transcript</li>
+                        <li>AI analyzes the content for accuracy and claims</li>
+                        <li>View detailed analysis organized by categories</li>
+                    </ol>
                 </div>
             </div>
         </div>
     </div>
 
-    <footer class="footer">
-        Wait for the magic to happen.
+    <footer class="footer mt-auto py-3 bg-light">
+        <div class="container text-center">
+            <span class="text-muted">YouTube Video Analyzer &copy; 2023</span>
+        </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JavaScript -->
     <script>
-        function showSpinner() {
-            document.getElementById('spinner').style.display = 'block';
-        }
+        // Toggle password visibility
+        document.getElementById('toggle-api-key').addEventListener('click', function() {
+            const apiKey = document.getElementById('api_key');
+            const icon = this.querySelector('i');
+            
+            if (apiKey.type === 'password') {
+                apiKey.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                apiKey.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+        
+        // Form submission and progress simulation
+        document.getElementById('analyze-form').addEventListener('submit', function(e) {
+            const progressContainer = document.getElementById('progress-container');
+            const progressBar = progressContainer.querySelector('.progress-bar');
+            const statusMessage = document.getElementById('status-message');
+            const analyzeBtn = document.getElementById('analyze-btn');
+            
+            // Show progress bar
+            progressContainer.classList.remove('d-none');
+            statusMessage.classList.remove('d-none');
+            statusMessage.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Analyzing your video. This may take a few minutes...';
+            analyzeBtn.disabled = true;
+            
+            // Simulate progress (just for UI feedback)
+            let progress = 0;
+            const interval = setInterval(function() {
+                progress += Math.random() * 2;
+                if (progress > 95) {
+                    clearInterval(interval);
+                    progress = 95;
+                }
+                progressBar.style.width = progress + '%';
+                progressBar.setAttribute('aria-valuenow', progress);
+            }, 1000);
+        });
+        
+        // Theme toggle
+        document.getElementById('theme-toggle').addEventListener('click', function() {
+            const body = document.body;
+            const icon = this.querySelector('i');
+            
+            if (body.getAttribute('data-bs-theme') === 'dark') {
+                body.setAttribute('data-bs-theme', 'light');
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            } else {
+                body.setAttribute('data-bs-theme', 'dark');
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            }
+            
+            // Save preference
+            localStorage.setItem('theme', body.getAttribute('data-bs-theme'));
+        });
+        
+        // Load saved theme preference
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                document.body.setAttribute('data-bs-theme', savedTheme);
+                const icon = document.querySelector('#theme-toggle i');
+                
+                if (savedTheme === 'dark') {
+                    icon.classList.remove('fa-moon');
+                    icon.classList.add('fa-sun');
+                }
+            }
+        });
     </script>
 </body>
 </html>

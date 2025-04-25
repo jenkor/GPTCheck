@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyzing {{ video_title }} - YouTube Video Analyzer</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- Auto-refresh page when processing -->
+    {% if task_status.status in ['pending', 'processing'] %}
+    <meta http-equiv="refresh" content="5">
+    {% endif %}
+</head>
+<body data-bs-theme="light">
+    <nav class="navbar navbar-expand-md navbar-dark bg-primary fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <i class="fab fa-youtube me-2"></i>YouTube Video Analyzer
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">
+                            <i class="fas fa-home me-1"></i>Home
+                        </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <button id="theme-toggle" class="btn btn-outline-light">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container py-5 mt-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h4 class="mb-0">Analyzing Video</h4>
+                    </div>
+                    <div class="card-body text-center">
+                        {% if video_url %}
+                        <div class="ratio ratio-16x9 mb-4">
+                            <iframe src="https://www.youtube.com/embed/{{ video_url.split('v=')[1].split('&')[0] }}" 
+                                title="YouTube video player" frameborder="0" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowfullscreen></iframe>
+                        </div>
+                        {% endif %}
+                        
+                        <h3 class="mb-3">{{ video_title }}</h3>
+                        
+                        {% if task_status.status == 'pending' %}
+                            <div class="alert alert-info">
+                                <i class="fas fa-hourglass-start me-2"></i>
+                                Your analysis is in the queue and will start shortly.
+                            </div>
+                        {% elif task_status.status == 'processing' %}
+                            <div class="alert alert-primary">
+                                <i class="fas fa-cogs me-2"></i>
+                                Analysis in progress...
+                            </div>
+                        {% elif task_status.status == 'failed' %}
+                            <div class="alert alert-danger">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                Analysis failed: {{ task_status.error }}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="progress mb-3">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                role="progressbar" 
+                                style="width: {{ progress }}%;" 
+                                aria-valuenow="{{ progress }}" 
+                                aria-valuemin="0" 
+                                aria-valuemax="100">
+                                {{ progress }}%
+                            </div>
+                        </div>
+                        
+                        <p class="text-muted mb-4">
+                            {% if task_status.status == 'pending' %}
+                                Waiting to start analysis...
+                            {% elif task_status.status == 'processing' %}
+                                Processing video transcript and generating analysis...
+                            {% elif task_status.status == 'failed' %}
+                                Analysis failed. Please try again.
+                            {% endif %}
+                        </p>
+                        
+                        <div class="d-flex justify-content-center">
+                            <a href="/" class="btn btn-outline-primary me-2">
+                                <i class="fas fa-home me-1"></i>Back to Home
+                            </a>
+                            {% if task_status.status == 'failed' %}
+                            <a href="{{ url_for('main.analyze_video') }}" class="btn btn-primary">
+                                <i class="fas fa-redo me-1"></i>Try Again
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="card-footer text-muted">
+                        <small>Task ID: {{ task_id }}</small>
+                    </div>
+                </div>
+                
+                <div class="card shadow-sm mt-4">
+                    <div class="card-header">
+                        <h5>What's happening?</h5>
+                    </div>
+                    <div class="card-body">
+                        <ol>
+                            <li class="{% if progress >= 10 %}text-success{% endif %}">
+                                <i class="fas {% if progress >= 10 %}fa-check-circle{% else %}fa-circle{% endif %} me-2"></i>
+                                Extracting YouTube video transcript
+                            </li>
+                            <li class="{% if progress >= 30 %}text-success{% endif %}">
+                                <i class="fas {% if progress >= 30 %}fa-check-circle{% else %}fa-circle{% endif %} me-2"></i>
+                                Breaking transcript into sections for analysis
+                            </li>
+                            <li class="{% if progress >= 50 %}text-success{% endif %}">
+                                <i class="fas {% if progress >= 50 %}fa-check-circle{% else %}fa-circle{% endif %} me-2"></i>
+                                Analyzing each section with AI
+                            </li>
+                            <li class="{% if progress >= 80 %}text-success{% endif %}">
+                                <i class="fas {% if progress >= 80 %}fa-check-circle{% else %}fa-circle{% endif %} me-2"></i>
+                                Generating comprehensive summary
+                            </li>
+                            <li class="{% if progress >= 100 %}text-success{% endif %}">
+                                <i class="fas {% if progress >= 100 %}fa-check-circle{% else %}fa-circle{% endif %} me-2"></i>
+                                Formatting results
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer mt-auto py-3 bg-light">
+        <div class="container text-center">
+            <span class="text-muted">YouTube Video Analyzer &copy; 2023</span>
+        </div>
+    </footer>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Theme toggle
+        document.getElementById('theme-toggle').addEventListener('click', function() {
+            const body = document.body;
+            const icon = this.querySelector('i');
+            
+            if (body.getAttribute('data-bs-theme') === 'dark') {
+                body.setAttribute('data-bs-theme', 'light');
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            } else {
+                body.setAttribute('data-bs-theme', 'dark');
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            }
+            
+            // Save preference
+            localStorage.setItem('theme', body.getAttribute('data-bs-theme'));
+        });
+        
+        // Load saved theme preference
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                document.body.setAttribute('data-bs-theme', savedTheme);
+                const icon = document.querySelector('#theme-toggle i');
+                
+                if (savedTheme === 'dark') {
+                    icon.classList.remove('fa-moon');
+                    icon.classList.add('fa-sun');
+                }
+            }
+        });
+        
+        // For client-side task status polling (if auto-refresh is inadequate)
+        {% if task_status.status in ['pending', 'processing'] %}
+        /*
+        // This code is commented out as we're using meta refresh,
+        // but it can be enabled for more dynamic updates without page refresh
+        function checkTaskStatus() {
+            fetch('/api/tasks/{{ task_id }}')
+                .then(response => response.json())
+                .then(data => {
+                    // Update progress bar
+                    document.querySelector('.progress-bar').style.width = data.progress + '%';
+                    document.querySelector('.progress-bar').setAttribute('aria-valuenow', data.progress);
+                    document.querySelector('.progress-bar').textContent = data.progress + '%';
+                    
+                    // If completed, redirect to results
+                    if (data.status === 'completed') {
+                        window.location.href = '/tasks/{{ task_id }}';
+                    } else if (data.status !== 'failed') {
+                        // Check again in 2 seconds
+                        setTimeout(checkTaskStatus, 2000);
+                    }
+                });
+        }
+        
+        // Start polling
+        setTimeout(checkTaskStatus, 2000);
+        */
+        {% endif %}
+    </script>
+</body>
+</html> 

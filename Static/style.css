@@ -1,88 +1,163 @@
-html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    background-color: #f8f9fa; /* A light grey background */
+/* Base Styles */
+:root {
+    --primary-color: #007bff;
+    --secondary-color: #6c757d;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
+    --light-color: #f8f9fa;
+    --dark-color: #343a40;
+    --body-bg: #f8f9fa;
+    --card-bg: #ffffff;
+    --text-color: #343a40;
+    --border-color: #dee2e6;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Dark Theme Variables */
+[data-bs-theme="dark"] {
+    --primary-color: #375a7f;
+    --secondary-color: #444444;
+    --body-bg: #222222;
+    --card-bg: #303030;
+    --text-color: #f8f9fa;
+    --border-color: #444444;
+    --shadow-color: rgba(0, 0, 0, 0.5);
 }
 
 body {
-    padding-top: 56px; /* Space for the fixed navbar */
+    font-family: var(--font-family);
+    background-color: var(--body-bg);
+    color: var(--text-color);
+    line-height: 1.5;
+    padding-top: 60px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .content-container {
-    flex-grow: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    min-height: calc(100vh - 120px);
+    padding: 2rem 1rem;
 }
 
 .form-container {
-    background: #ffffff;
-    padding: 2rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
+    max-width: 800px;
     width: 100%;
-    max-width: 500px; /* Adjust the form width here */
-    margin: 2rem;
+    padding: 1rem;
 }
 
-h1 {
-    font-size: 1.75rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    text-align: center;
+/* Card Styling */
+.card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 6px var(--shadow-color);
+    transition: all 0.3s ease;
 }
 
-.form-label {
-    font-weight: 500;
+.card:hover {
+    box-shadow: 0 6px 10px var(--shadow-color);
 }
 
+.card-header {
+    background-color: rgba(0, 0, 0, 0.03);
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Footer */
 .footer {
-    text-align: center;
-    background-color: #e9ecef;
-    padding: 1rem 0;
-    position: static;
-    width: 100%;
-    margin-top: auto; /* Push footer to the bottom */
+    margin-top: auto;
+    background-color: var(--card-bg);
+    border-top: 1px solid var(--border-color);
 }
 
-.result-card {
-    background: #fff;
-    border: 1px solid #dee2e6;
-    border-radius: 0.25rem;
-    padding: 2rem;
+/* Analysis Results Styling */
+.analysis-section {
     margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
 }
 
-/* Center the result title */
-h1 {
-    text-align: center;
+.analysis-section:last-child {
+    border-bottom: none;
 }
 
-/* Spinner Styles */
-#spinner {
-    display: none; /* Keep spinner hidden until needed */
-    position: fixed; /* Fixed at the center of the page */
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%); /* Center the spinner */
-    z-index: 1000; /* Ensure spinner is above other elements */
+.analysis-section h2 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--primary-color);
 }
 
-.spinner-border {
-    width: 4rem; /* Larger spinner */
-    height: 4rem;
-    border-width: 0.5em; /* Thicker border for spinner */
+.section-content {
+    white-space: pre-line;
 }
 
-/* Style for links in the result card */
-.result-card a {
-    color: #0d6efd; /* Bootstrap primary color */
-    text-decoration: none;
+/* Progress Bar Animation */
+@keyframes progress-bar-shine {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
 }
 
-.result-card a:hover {
-    text-decoration: underline;
+.progress-bar {
+    background-image: linear-gradient(
+        45deg,
+        rgba(255, 255, 255, 0.15) 25%,
+        transparent 25%,
+        transparent 50%,
+        rgba(255, 255, 255, 0.15) 50%,
+        rgba(255, 255, 255, 0.15) 75%,
+        transparent 75%,
+        transparent
+    );
+    background-size: 1rem 1rem;
+    animation: progress-bar-shine 2s linear infinite;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .content-container {
+        padding: 1rem 0.5rem;
+    }
+    
+    .form-container {
+        padding: 0.5rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+}
+
+/* Print Styles */
+@media print {
+    body {
+        padding: 0;
+        background: #fff;
+    }
+    
+    .navbar, .footer, .no-print {
+        display: none !important;
+    }
+    
+    .content-container {
+        padding: 0;
+        margin: 0;
+    }
+    
+    .card {
+        box-shadow: none;
+        border: none;
+    }
+    
+    .container {
+        max-width: 100%;
+        width: 100%;
+    }
 }
